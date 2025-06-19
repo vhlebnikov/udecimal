@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -408,6 +409,36 @@ func TestScan(t *testing.T) {
 			require.NoError(t, err)
 
 			require.Equal(t, tc.want.String(), val)
+		})
+	}
+}
+
+func TestEncodeValues(t *testing.T) {
+	testcases := []string{
+		"123456789.123456789",
+		"0",
+		"1",
+		"-1",
+		"-123456789.123456789",
+		"0.000000001",
+		"-0.000000001",
+		"123.123",
+		"-123.123",
+		"12345678901234567890123456789.1234567890123456789",
+		"-12345678901234567890123456789.1234567890123456789",
+	}
+
+	for _, in := range testcases {
+		t.Run(in, func(t *testing.T) {
+			d := MustParse(in)
+
+			key := "testKey"
+			want := url.Values{key: []string{d.String()}}
+			got := url.Values{}
+			err := d.EncodeValues(key, &got)
+
+			require.NoError(t, err)
+			require.Equal(t, want, got)
 		})
 	}
 }

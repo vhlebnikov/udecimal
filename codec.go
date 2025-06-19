@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math/big"
 	"math/bits"
+	"net/url"
 	"unsafe"
 )
 
@@ -509,6 +510,14 @@ func (d *Decimal) Scan(src any) error {
 // [driver.Valuer]: https://pkg.go.dev/database/sql/driver#Valuer
 func (d Decimal) Value() (driver.Value, error) {
 	return d.String(), nil
+}
+
+// EncodeValues implements the [query.Encoder] interface by the go-querystring package.
+//
+// [query.Encoder]: https://pkg.go.dev/github.com/google/go-querystring/query#Encoder
+func (d Decimal) EncodeValues(key string, v *url.Values) error {
+	v.Set(key, d.String())
+	return nil
 }
 
 // NullDecimal is a nullable Decimal.
