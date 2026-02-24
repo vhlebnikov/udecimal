@@ -570,6 +570,16 @@ func (d Decimal) Div(e Decimal) (Decimal, error) {
 	return newDecimal(neg, bintFromBigInt(dBig), defaultPrec), nil
 }
 
+// MustDiv similars to Div, but panics instead of returning error
+func (d Decimal) MustDiv(e Decimal) Decimal {
+	v, err := d.Div(e)
+	if err != nil {
+		panic(err)
+	}
+
+	return v
+}
+
 func tryDivU128(d, e Decimal, neg bool) (Decimal, error) {
 	if d.coef.overflow() || e.coef.overflow() {
 		return Decimal{}, errOverflow
